@@ -6,7 +6,7 @@ import Globe from './Globe';
 const HeroSection = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const btnRef = useRef<HTMLAnchorElement>(null);
+  const btnRef = useRef<HTMLDivElement>(null); // Changed from HTMLAnchorElement to HTMLDivElement
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -137,7 +137,7 @@ const HeroSection = () => {
           </div>
         </div>
         
-        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
+        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end items-center"> {/* Added items-center */}
           <div className="w-full max-w-md aspect-square relative scene">
             <div className="w-full h-full card-3d">
               <Globe />
