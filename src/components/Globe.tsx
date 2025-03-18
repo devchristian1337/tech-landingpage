@@ -203,7 +203,7 @@ const Globe = () => {
   return (
     <div 
       ref={containerRef} 
-      className="w-full h-full relative overflow-hidden rounded-full bg-gradient-to-br from-black/40 to-black/10 backdrop-blur-lg border border-white/10 shadow-[0_0_30px_rgba(0,242,254,0.2)] p-4"
+      className="w-full h-full relative overflow-hidden rounded-full bg-gradient-to-br from-black/40 to-black/10 backdrop-blur-lg border border-white/10 shadow-[0_0_30px_rgba(0,242,254,0.2)]"
     >
       <canvas 
         ref={canvasRef} 
