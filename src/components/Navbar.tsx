@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -54,7 +55,7 @@ const Navbar = () => {
         <div className="hidden md:block">
           <a 
             href="#contact" 
-            className="btn-hover-effect bg-gradient-to-r from-neon-blue to-neon-purple px-6 py-2 rounded-full text-white font-medium"
+            className="bg-gradient-to-r from-neon-blue to-neon-purple px-6 py-2 rounded-full text-white font-medium transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_10px_rgba(138,43,226,0.5)]"
           >
             Get Started
           </a>
@@ -90,7 +91,7 @@ const Navbar = () => {
           ))}
           <a 
             href="#contact" 
-            className="btn-hover-effect bg-gradient-to-r from-neon-blue to-neon-purple px-8 py-3 rounded-full text-white font-medium mt-4"
+            className="bg-gradient-to-r from-neon-blue to-neon-purple px-8 py-3 rounded-full text-white font-medium mt-4 transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_10px_rgba(138,43,226,0.5)]"
             onClick={() => setMobileMenuOpen(false)}
           >
             Get Started
