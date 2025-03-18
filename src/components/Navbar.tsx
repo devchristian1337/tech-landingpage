@@ -19,6 +19,13 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu when switching to desktop view
+  useEffect(() => {
+    if (!isMobile && mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  }, [isMobile, mobileMenuOpen]);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -77,7 +84,7 @@ const Navbar = () => {
       <div 
         className={cn(
           "md:hidden fixed inset-0 bg-background/95 backdrop-blur-lg z-40 transition-all duration-300 flex flex-col justify-center items-center",
-          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none translate-y-[-100%]"
         )}
       >
         <nav className="flex flex-col items-center space-y-6 px-6 w-full max-w-sm">
@@ -85,7 +92,7 @@ const Navbar = () => {
             <a 
               key={item} 
               href={`#${item.toLowerCase()}`}
-              className="font-medium text-xl text-white/80 hover:text-white transition-colors w-full text-center"
+              className="font-medium text-xl text-white/80 hover:text-white transition-colors w-full text-center py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               {item}

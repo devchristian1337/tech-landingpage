@@ -78,21 +78,21 @@ const Footer = () => {
             </ul>
           </div>
           
-          <div>
+          <div className="w-full">
             <h3 className="text-lg font-bold mb-6">Newsletter</h3>
             <p className="text-white/70 mb-4">
               Subscribe to our newsletter to receive the latest updates and news.
             </p>
-            <form className="flex flex-col sm:flex-row gap-2">
+            <form className="flex flex-col sm:flex-row gap-2 w-full">
               <input 
                 type="email" 
                 placeholder="Your email address" 
-                className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-blue/50 text-white"
+                className="flex-1 w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-blue/50 text-white"
                 required
               />
               <button 
                 type="submit" 
-                className="btn-hover-effect bg-gradient-to-r from-neon-blue to-neon-purple px-4 py-2 rounded-lg text-white font-medium"
+                className="btn-hover-effect whitespace-nowrap bg-gradient-to-r from-neon-blue to-neon-purple px-4 py-2 rounded-lg text-white font-medium"
               >
                 Subscribe
               </button>
@@ -104,7 +104,7 @@ const Footer = () => {
           <p className="text-white/50 text-sm mb-4 md:mb-0">
             &copy; {new Date().getFullYear()} NovaTech. All rights reserved.
           </p>
-          <div className="flex space-x-6">
+          <div className="flex flex-wrap justify-center md:justify-end gap-4 md:space-x-6">
             <a href="#" className="text-white/50 hover:text-white text-sm transition-colors">
               Privacy Policy
             </a>
