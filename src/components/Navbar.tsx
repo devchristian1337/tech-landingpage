@@ -83,7 +83,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <div 
         className={cn(
-          "md:hidden fixed inset-0 bg-background/95 backdrop-blur-lg z-40 transition-all duration-300 flex flex-col justify-center items-center",
+          "md:hidden fixed inset-0 bg-black/95 backdrop-blur-lg z-40 transition-all duration-300 flex flex-col justify-center items-center",
           mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none translate-y-[-100%]"
         )}
       >
