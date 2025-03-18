@@ -8,8 +8,11 @@ import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 import ScrollToTop from '../components/ScrollToTop';
 import ParticleBackground from '../components/ParticleBackground';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
+  const isMobile = useIsMobile();
+
   // Initialize scroll animation observer
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -20,7 +23,7 @@ const Index = () => {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: isMobile ? 0.05 : 0.1 }
     );
 
     // Target all elements with reveal-on-scroll class
@@ -30,10 +33,12 @@ const Index = () => {
     return () => {
       revealElements.forEach((el) => observer.unobserve(el));
     };
-  }, []);
+  }, [isMobile]);
 
-  // Initialize parallax effect for 3D cards
+  // Initialize parallax effect for 3D cards - disable on mobile for better performance
   useEffect(() => {
+    if (isMobile) return; // Skip parallax effect on mobile devices
+    
     const cards = document.querySelectorAll('.card-3d');
     
     const handleMouseMove = (e: MouseEvent) => {
@@ -73,7 +78,7 @@ const Index = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
