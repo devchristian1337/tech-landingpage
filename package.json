@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "knip": "knip"
+    "knip": "knip",
+    "deploy": "npx wrangler pages deploy dist"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
