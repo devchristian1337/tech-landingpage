@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Particle = {
   x: number;
@@ -10,63 +11,80 @@ type Particle = {
 };
 
 const ParticleBackground = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameIdRef = useRef<number>(0);
+  const particlesRef = useRef<Particle[]>([]);
+  const lastFrameTimeRef = useRef<number>(0);
+  const isMobile = useIsMobile();
+
+  // Using useMemo to avoid recreating these values on renders
+  const particleColors = useMemo(
+    () => [
+      "rgba(0, 242, 254, 0.8)", // neon blue
+      "rgba(138, 43, 226, 0.8)", // neon purple
+      "rgba(255, 105, 180, 0.8)", // neon pink
+      "rgba(0, 255, 255, 0.8)", // neon cyan
+    ],
+    []
+  );
+
+  const desiredFPS = useMemo(() => (isMobile ? 30 : 60), [isMobile]);
+  const frameInterval = useMemo(() => 1000 / desiredFPS, [desiredFPS]);
+  const maxParticles = useMemo(() => (isMobile ? 50 : 100), [isMobile]);
+  const maxDistance = useMemo(() => (isMobile ? 100 : 150), [isMobile]);
+
   useEffect(() => {
-    const canvas = document.getElementById(
-      "particle-canvas"
-    ) as HTMLCanvasElement;
+    const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId: number;
-    let particles: Particle[] = [];
-
     // Set canvas size to match window
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
     };
 
     // Initialize particles
     const initParticles = () => {
-      particles = [];
+      particlesRef.current = [];
+      // Calculate particle density based on screen size with upper limit
       const particleCount = Math.min(
-        window.innerWidth * window.innerHeight * 0.00008,
-        150
+        Math.floor(window.innerWidth * window.innerHeight * 0.00004),
+        maxParticles
       );
 
       for (let i = 0; i < particleCount; i++) {
         const size = Math.random() * 2 + 0.1;
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
+        const x = Math.random() * (canvas?.width || 0);
+        const y = Math.random() * (canvas?.height || 0);
         const speedX = Math.random() * 0.2 - 0.1;
         const speedY = Math.random() * 0.2 - 0.1;
+        const color =
+          particleColors[Math.floor(Math.random() * particleColors.length)];
 
-        // Choose colors from our neon palette
-        const colors = [
-          "rgba(0, 242, 254, 0.8)", // neon blue
-          "rgba(138, 43, 226, 0.8)", // neon purple
-          "rgba(255, 105, 180, 0.8)", // neon pink
-          "rgba(0, 255, 255, 0.8)", // neon cyan
-        ];
-        const color = colors[Math.floor(Math.random() * colors.length)];
-
-        particles.push({ x, y, size, speedX, speedY, color });
+        particlesRef.current.push({ x, y, size, speedX, speedY, color });
       }
     };
 
     // Update particles position
     const updateParticles = () => {
+      const particles = particlesRef.current;
+      const canvasWidth = canvas?.width || 0;
+      const canvasHeight = canvas?.height || 0;
+
       particles.forEach((particle) => {
         particle.x += particle.speedX;
         particle.y += particle.speedY;
 
         // Bounce off walls
-        if (particle.x < 0 || particle.x > canvas.width) {
+        if (particle.x < 0 || particle.x > canvasWidth) {
           particle.speedX *= -1;
         }
-        if (particle.y < 0 || particle.y > canvas.height) {
+        if (particle.y < 0 || particle.y > canvasHeight) {
           particle.speedY *= -1;
         }
       });
@@ -74,7 +92,10 @@ const ParticleBackground = () => {
 
     // Draw particles
     const drawParticles = () => {
+      if (!ctx || !canvas) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const particles = particlesRef.current;
 
       particles.forEach((particle) => {
         ctx.beginPath();
@@ -84,12 +105,17 @@ const ParticleBackground = () => {
       });
 
       // Connect nearby particles with lines
-      connectParticles();
+      if (!isMobile) {
+        // Skip connections on mobile for better performance
+        connectParticles();
+      }
     };
 
     // Connect particles within a certain distance
     const connectParticles = () => {
-      const maxDistance = 150;
+      if (!ctx) return;
+
+      const particles = particlesRef.current;
 
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -112,27 +138,40 @@ const ParticleBackground = () => {
       }
     };
 
-    // Animation loop
-    const animate = () => {
-      updateParticles();
-      drawParticles();
-      animationFrameId = requestAnimationFrame(animate);
+    // Animation loop with frame rate control
+    const animate = (timestamp: number) => {
+      // Skip frames to maintain desired FPS
+      if (timestamp - lastFrameTimeRef.current >= frameInterval) {
+        lastFrameTimeRef.current = timestamp;
+        updateParticles();
+        drawParticles();
+      }
+
+      animationFrameIdRef.current = requestAnimationFrame(animate);
     };
 
-    // Handle mouse movement
+    // Handle mouse movement with throttling
+    let lastMoveTime = 0;
+    const moveThrottle = 50; // ms between mouse move handling
+
     const handleMouseMove = (e: MouseEvent) => {
+      const currentTime = performance.now();
+      if (currentTime - lastMoveTime < moveThrottle) return;
+      lastMoveTime = currentTime;
+
       const mouseX = e.clientX;
       const mouseY = e.clientY;
+      const particles = particlesRef.current;
 
       // Push particles away from cursor
       particles.forEach((particle) => {
         const dx = mouseX - particle.x;
         const dy = mouseY - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const maxDistance = 100;
+        const maxForceDistance = isMobile ? 50 : 100;
 
-        if (distance < maxDistance) {
-          const force = (maxDistance - distance) / maxDistance;
+        if (distance < maxForceDistance) {
+          const force = (maxForceDistance - distance) / maxForceDistance;
           const directionX = dx / distance;
           const directionY = dy / distance;
 
@@ -145,26 +184,47 @@ const ParticleBackground = () => {
     // Initialize
     resizeCanvas();
     initParticles();
-    animate();
+    lastFrameTimeRef.current = performance.now();
+    animationFrameIdRef.current = requestAnimationFrame(animate);
 
     // Event listeners
-    window.addEventListener("resize", () => {
+    const debouncedResize = debounce(() => {
       resizeCanvas();
       initParticles();
-    });
+    }, 150);
 
+    window.addEventListener("resize", debouncedResize);
     window.addEventListener("mousemove", handleMouseMove);
 
     // Cleanup
     return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", resizeCanvas);
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
+      window.removeEventListener("resize", debouncedResize);
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [isMobile, maxParticles, maxDistance, particleColors, frameInterval]);
+
+  // Simple debounce function
+  const debounce = <T extends (...args: unknown[]) => void>(
+    func: T,
+    wait: number
+  ) => {
+    let timeout: ReturnType<typeof setTimeout>;
+    return function executedFunction(...args: Parameters<T>) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
 
   return (
     <canvas
+      ref={canvasRef}
       id="particle-canvas"
       className="fixed inset-0 z-[-1] pointer-events-none"
     />
