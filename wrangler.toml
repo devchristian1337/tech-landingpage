@@ -1,6 +1,6 @@
-name = "vite-react-shadcn"
+name = "Tech Landingpage"
 main = "dist/index.html"
-compatibility_date = "2023-01-01"
+compatibility_date = "2025-01-01"
 
 [site]
 bucket = "dist" 
