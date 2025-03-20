@@ -171,10 +171,10 @@ const Footer = () => {
                   )}
                 </div>
               </div>
-              <div className="self-start">
+              <div className="self-start w-full sm:w-auto">
                 <button
                   type="submit"
-                  className="btn-hover-effect whitespace-nowrap bg-gradient-to-r from-neon-blue to-neon-purple px-4 py-2 rounded-lg text-white font-medium"
+                  className="btn-hover-effect whitespace-nowrap bg-gradient-to-r from-neon-blue to-neon-purple px-4 py-2 rounded-lg text-white font-medium w-full sm:w-auto"
                   aria-label="Subscribe to newsletter"
                 >
                   Subscribe
